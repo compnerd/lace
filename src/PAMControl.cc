@@ -54,8 +54,7 @@ control_from_string(const std::string& control)
    for (unsigned int i = 0; i < N_ELEMENTS(_control_map); i++)
       if (_control_map[i].string == control)
          return _control_map[i].control;
-   /* TODO implement exception */
-   throw;
+   throw InvalidControlException("Invalid Control: " + control);
 }
 
 static std::string
@@ -64,8 +63,22 @@ string_from_control(const PAMControl::Control control)
    for (unsigned int i = 0; i < N_ELEMENTS(_control_map); i++)
       if (_control_map[i].control == control)
          return _control_map[i].string;
-   /* TODO implement exception */
-   throw;
+   throw InvalidControlException("Invalid Control: " + control);
+}
+
+InvalidControlException::InvalidControlException(const std::string & message)
+   : _message(message)
+{
+}
+
+InvalidControlException::~InvalidControlException(void) throw ()
+{
+}
+
+const char *
+InvalidControlException::what(void) const throw ()
+{
+   return _message.c_str();
 }
 
 PAMControl::PAMControl(void)

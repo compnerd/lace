@@ -52,8 +52,7 @@ facility_from_string(const std::string& facility)
    for (unsigned int i = 0; i < N_ELEMENTS(_facility_map); i++)
       if (_facility_map[i].string == facility)
          return _facility_map[i].facility;
-   /* TODO implement exception */
-   throw;
+   throw InvalidFacilityException("Invalid Facility: " + facility);
 }
 
 static std::string
@@ -62,8 +61,22 @@ string_from_facility(const PAMFacility::Facility facility)
    for (unsigned int i = 0; i < N_ELEMENTS(_facility_map); i++)
       if (_facility_map[i].facility == facility)
          return _facility_map[i].string;
-   /* TODO implement exception */
-   throw;
+   throw InvalidFacilityException("Invalid Facility: " + facility);
+}
+
+InvalidFacilityException::InvalidFacilityException(const std::string & message)
+   : _message(message)
+{
+}
+
+InvalidFacilityException::~InvalidFacilityException(void) throw ()
+{
+}
+
+const char *
+InvalidFacilityException::what(void) const throw ()
+{
+   return _message.c_str();
 }
 
 PAMFacility::PAMFacility(void)

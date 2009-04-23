@@ -30,9 +30,23 @@
 #define __PAM_CONTROL_HH__
 
 #include <string>
+#include <exception>
 
 namespace SystemConfiguration
 {
+   class InvalidControlException
+      : public std::exception
+   {
+      private:
+         std::string _message;
+
+      public:
+         InvalidControlException(const std::string & message);
+         virtual ~InvalidControlException(void) throw ();
+
+         const char *what(void) const throw();
+   };
+
    class PAMControl
    {
       public:

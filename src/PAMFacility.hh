@@ -30,9 +30,23 @@
 #define __PAM_FACILITY_HH__
 
 #include <string>
+#include <exception>
 
 namespace SystemConfiguration
 {
+   class InvalidFacilityException
+      : public std::exception
+   {
+      private:
+         std::string _message;
+
+      public:
+         InvalidFacilityException(const std::string & message);
+         virtual ~InvalidFacilityException(void) throw ();
+
+         const char *what(void) const throw ();
+   };
+
    class PAMFacility
    {
       friend std::ostream& operator<<(std::ostream& os, const PAMFacility& facility);
