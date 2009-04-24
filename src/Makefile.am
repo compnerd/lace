@@ -10,4 +10,10 @@ libace_la_SOURCES = PAMControl.cc \
 		    PAMPolicy.hh \
 		    PAMStack.cc \
 		    PAMStack.hh \
+		    NSSService.cc \
+		    NSSService.hh \
+		    NSSDatabase.cc \
+		    NSSDatabase.hh \
+		    NSSConfiguration.cc \
+		    NSSConfiguration.hh \
 		    $(NULL)
