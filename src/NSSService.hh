@@ -43,6 +43,7 @@ namespace SystemConfiguration
          std::list< std::string > _parameters;
 
       public:
+         NSSService(void);
          NSSService(const std::string & module);
          ~NSSService(void);
 

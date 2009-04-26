@@ -32,6 +32,11 @@
 
 using namespace SystemConfiguration;
 
+NSSService::NSSService(void)
+   : _module("")
+{
+}
+
 NSSService::NSSService(const std::string & module)
    : _module(module)
 {

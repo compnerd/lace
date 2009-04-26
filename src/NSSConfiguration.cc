@@ -64,14 +64,28 @@ SystemConfiguration::operator<<(std::ostream & os, const NSSConfiguration & conf
    }
 }
 
+static std::string
+trim(const std::string & str)
+{
+   size_t start(0), end(str.length());
+
+   for (; start < str.length(); start++)
+      if (! ::isspace(str[start]))
+         break;
+
+   for (; end > 0; end--)
+      if (! ::isspace(str[end]))
+         break;
+
+   return str.substr(start, end);
+}
+
 std::istream &
 SystemConfiguration::operator>>(std::istream & is, NSSConfiguration & configuration)
 {
    std::string buffer;
 
    while (is) {
-      NSSDatabase database;
-
       /* skip comments */
       if (is.peek() == '#') {
          std::getline(is, buffer);
@@ -88,47 +102,55 @@ SystemConfiguration::operator>>(std::istream & is, NSSConfiguration & configurat
 
       std::getline(is, buffer);
       if (! buffer.empty()) {
-         std::stringstream stream(buffer);
-         std::string db;
+         NSSDatabase database;
+         NSSService service;
+         size_t pos(0);
 
-         /* database: module [params] module */
+         pos = buffer.find_first_of(':', pos);
+         database = NSSDatabase(trim(buffer.substr(0, pos)));
 
-         /* database */
-         stream >> db;
-         database = NSSDatabase(db.substr(0, db.length() - 1));
+         while (pos < buffer.length()) {
+            size_t start(pos + 1), end;
 
-         /* lookup order */
-         while (stream) {
-            std::string entry;
-            stream >> entry;
+            for (; start < buffer.length(); start++)
+               if (! ::isspace(buffer[start]))
+                  break;
 
-            /* module */
-            if (! entry.empty()) {
-               NSSService module(entry);
+            for (end = start + 1; end < buffer.length(); end++)
+               if (::isspace(buffer[end]))
+                  break;
 
-               /* module parameters */
-               if (stream.tellg() < stream.str().length()) {
-                  size_t pos(stream.tellg());
+            if (end - start == 0)
+               break;
 
-                  if (buffer.at(pos + 1) == '[') {
-                     /* pos + 2 for the space and [, pos - 2 for [ and ] */
-                     std::stringstream parameters(buffer.substr(pos + 2, buffer.find_first_of(']', pos + 1) - pos - 2));
+            service = NSSService(buffer.substr(start, end - start));
 
-                     while (parameters) {
-                        std::string parameter;
-                        parameters >> parameter;
+            pos = end;
 
-                        if (! parameter.empty())
-                           module.parameters().push_back(parameter);
-                     }
+            for (start = end; start < buffer.length(); start++)
+               if (! ::isspace(buffer[start]))
+                  break;
 
-                     /* 3 for the space, [, and ] */
-                     stream.seekg(pos + parameters.str().length() + 3);
-                  }
-               }
-
-               configuration[database].push_back(module);
+            if (buffer[start] != '[') {
+               /* no module parameters */
+               configuration[database].push_back(service);
+               continue;
             }
+
+            pos = end = buffer.find_first_of(']', start);
+            if (end != std::string::npos && start - end > 0) {
+               std::stringstream parameters(trim(buffer.substr(start + 1, end - start - 1)));
+
+               while (parameters) {
+                  std::string parameter;
+                  parameters >> parameter;
+
+                  if (! parameter.empty())
+                     service.parameters().push_back(parameter);
+               }
+            }
+
+            configuration[database].push_back(service);
          }
       }
    }
