@@ -44,7 +44,7 @@ namespace SystemConfiguration
          InvalidDatabaseException(const std::string & message);
          virtual ~InvalidDatabaseException(void) throw ();
 
-         const char *what(void) throw ();
+         const char *what(void) const throw ();
    };
 
    class NSSDatabase

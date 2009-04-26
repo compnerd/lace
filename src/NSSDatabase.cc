@@ -80,7 +80,7 @@ InvalidDatabaseException::~InvalidDatabaseException(void) throw ()
 }
 
 const char *
-InvalidDatabaseException::what(void) throw ()
+InvalidDatabaseException::what(void) const throw ()
 {
    return _message.c_str();
 }
