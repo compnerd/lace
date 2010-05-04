@@ -1,3 +1,4 @@
+/* vim: set et fdm=syntax sts=3 sw=3 ts=3 : */
 /**
  * NSSConfiguration.hh
  * Copyright 2009 Saleem Abdulrasool <compnerd@compnerd.org>

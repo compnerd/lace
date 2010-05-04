@@ -1,3 +1,4 @@
+/* vim: set et fdm=syntax sts=3 sw=3 ts=3 : */
 /**
  * PAMStack.cc
  * Copyright 2007-2008 Saleem Abdulrasool <compnerd@compnerd.org>
