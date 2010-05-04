@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/bash
+# Copyright 2007-2010 Saleem Abdulrasool <compnerd@compnerd.org>
 
 : ${AUTOCONF:=autoconf}
-: ${AUTOHEADER:=autoheader}
 : ${AUTOMAKE:=automake}
 : ${ACLOCAL:=aclocal}
 : ${LIBTOOLIZE:=libtoolize}
@@ -18,17 +18,7 @@ run()
 }
 
 srcdir=$(dirname "${0}")
-test -z "${srcdir}" && srcdir="."
-
-( "${AUTOCONF}" --version ) < /dev/null > /dev/null 2>&1 || {
-   echo
-   echo "You must have autoconf installed to compile ${PROJECT}."
-   echo "Download the appropriate package for your distribution,"
-   echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
-   echo
-
-   DIE=1
-}
+[[ -z "${srcdir}" ]] && srcdir="."
 
 grep -q "^AC_PROG_INTLTOOL" "${srcdir}/configure.ac" && {
    ( "${INTLTOOLIZE}" --version ) < /dev/null > /dev/null 2>&1 || {
@@ -42,18 +32,8 @@ grep -q "^AC_PROG_INTLTOOL" "${srcdir}/configure.ac" && {
    }
 }
 
-( "${AUTOMAKE}" --version ) < /dev/null > /dev/null 2>&1 || {
-   echo
-   echo "You must have automake installed to compile ${PROJECT}."
-   echo "Download the appropriate package for your distribution,"
-   echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
-   echo
-
-   DIE=1
-}
-
-grep -q "^AM_PROG_LIBTOOL" "${srcdir}/configure.ac" && {
-   ( "${LIBTOOL}" --version ) < /dev/niull > /dev/null 2>&1 || {
+grep -q "^AC_PROG_LIBTOOL" "${srcdir}/configure.ac" && {
+   ( "${LIBTOOL}" --version ) < /dev/null > /dev/null 2>&1 || {
       echo
       echo "You must have libtool installed to compile ${PROJECT}."
       echo "Download the appropriate package for your distribution,"
@@ -64,15 +44,38 @@ grep -q "^AM_PROG_LIBTOOL" "${srcdir}/configure.ac" && {
    }
 }
 
-if test "${DIE}" = 1 ; then
+( "${AUTOCONF}" --version ) < /dev/null > /dev/null 2>&1 || {
+   echo
+   echo "You must have autoconf installed to compile ${PROJECT}."
+   echo "Download the appropriate package for your distribution,"
+   echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
+   echo
+
+   DIE=1
+}
+
+( "${AUTOMAKE}" --version ) < /dev/null > /dev/null 2>&1 || {
+   echo
+   echo "You must have automake installed to compile ${PROJECT}."
+   echo "Download the appropriate package for your distribution,"
+   echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
+   echo
+
+   DIE=1
+}
+
+if [[ ${DIE} == 1 ]] ; then
    exit 127
 fi
 
 run mkdir -p "${srcdir}/config"
-run "${LIBTOOLIZE}" --copy --force --automake
+
+if grep -q "^AC_PROG_LIBTOOL" "${srcdir}/configure.ac" ; then
+   run "${LIBTOOLIZE}" --copy --force --automake
+fi
+
 rm -f config.cache
-run "${ACLOCAL}"
-run "${AUTOHEADER}"
-run "${AUTOCONF}"
-run "${AUTOMAKE}" --add-missing --copy
+run "${ACLOCAL}" --force
+run "${AUTOCONF}" --force
+run "${AUTOMAKE}" --add-missing --copy --force-missing --foreign
 
