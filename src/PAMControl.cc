@@ -141,5 +141,3 @@ PAMControl::operator Control(void) const
    return _control;
 }
 
-/* vim: set sw=3 sts=3 ts=3 et : */
-

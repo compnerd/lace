@@ -99,5 +99,3 @@ SystemConfiguration::operator<<(std::ostream& os, const PAMStack& stack)
    return os;
 }
 
-/* vim: set sw=3 sts=3 ts=3 et : */
-

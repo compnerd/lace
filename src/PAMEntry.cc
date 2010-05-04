@@ -100,5 +100,3 @@ SystemConfiguration::operator>>(std::istream& is, PAMEntry& entry)
    return is;
 }
 
-/* vim: set sw=3 sts=3 ts=3 et : */
-
